@@ -18,7 +18,16 @@ init :: proc "c" () {
         logger = { func = slog.func },
     })
 
-    pass_action.colors[0] = { load_action = .CLEAR, clear_value = { 0.0, 0.05, 0.1, 1.0 }}
+    pass_action.colors[0] = { load_action = .CLEAR, clear_value = { 0.0, 0.04, 0.08, 1.0 }}
+
+    switch sg.query_backend() {
+    case .D3D11: fmt.println(">> using D3D11 backend")
+    case .GLCORE, .GLES3: fmt.println(">> using GL backend")
+    case .METAL_MACOS, .METAL_IOS, .METAL_SIMULATOR: fmt.println(">> using Metal backend")
+    case .WGPU: fmt.println(">> using WebGPU backend")
+    case .VULKAN: fmt.println(">> using Vulkan backend")
+    case .DUMMY: fmt.println(">> using dummy backend")
+    }
 }
 
 frame :: proc "c" () {
