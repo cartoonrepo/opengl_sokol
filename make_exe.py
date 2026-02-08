@@ -11,18 +11,23 @@ import sys
 
 from pathlib import Path
 
+IS_LINUX   = platform.system() == "Linux"
+IS_WINDOWS = platform.system() == "Windows"
+
 # ----------------------------------------------------------------
 program_name  = "cartoon"
-source        = "src"
+source        = "src/1_3_hello_window"
 
 collections   = ["-collection:sokol=sokol-odin/sokol"]
-extra_flags   = ["-strict-style", "-microarch:native", "-linker:mold"]
+extra_flags   = ["-strict-style", "-microarch:native"]
 debug_flags   = ["-debug", "-o:minimal"]
 release_flags = ["-o:speed", "-vet", "-no-bounds-check"]
 
-IS_WINDOWS = platform.system() == "Windows"
+if IS_LINUX:
+    extra_flags.append("-linker:mold")
+
 # if IS_WINDOWS:
-#     extra_flags.append("-subsystem:windows")
+    # extra_flags.append("-subsystem:windows")
 
 # ----------------------------------------------------------------
 parser = argparse.ArgumentParser(
