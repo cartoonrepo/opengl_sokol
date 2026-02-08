@@ -1,0 +1,3 @@
+[submodule "sokol-odin"]
+	path = sokol-odin
+	url = git@github.com:floooh/sokol-odin.git

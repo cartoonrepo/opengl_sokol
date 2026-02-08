@@ -1,3 +1,6 @@
+# NOTE: just do `odin run src -debug`
+# use this script if you have weaponized autism like Aoi Todo
+
 #!/usr/bin/env python3
 
 import argparse
@@ -12,7 +15,7 @@ from pathlib import Path
 program_name  = "cartoon"
 source        = "src"
 
-collections   = []
+collections   = ["-collection:sokol=sokol-odin/sokol"]
 extra_flags   = ["-strict-style", "-microarch:native", "-linker:mold"]
 debug_flags   = ["-debug", "-o:minimal"]
 release_flags = ["-o:speed", "-vet", "-no-bounds-check"]
