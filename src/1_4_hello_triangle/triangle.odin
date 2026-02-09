@@ -8,7 +8,6 @@ import sg    "sokol:gfx"
 import sapp  "sokol:app"
 import sglue "sokol:glue"
 
-
 state: struct {
     pip         : sg.Pipeline,
     bind        : sg.Bindings,

@@ -1,4 +1,4 @@
-# NOTE: just do `odin run src -debug`
+# NOTE: just do `odin run $source_dir -debug -collection:sokol=sokol-odin/sokol`
 # use this script if you have weaponized autism like Aoi Todo
 
 #!/usr/bin/env python3
@@ -16,7 +16,7 @@ IS_WINDOWS = platform.system() == "Windows"
 
 # ----------------------------------------------------------------
 program_name  = "cartoon"
-source        = "src/1_4_hello_triangle"
+source        = "yt_tutorial/part_1"
 
 collections   = ["-collection:sokol=sokol-odin/sokol"]
 extra_flags   = ["-strict-style", "-microarch:native"]
