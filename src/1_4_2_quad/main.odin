@@ -17,7 +17,7 @@ Vec4 :: [4]f32
 
 // NOTE:
 // either change IS_WIRE_FRAME value to true/false here or
-// add -define:IS_WIRE_FRAME=true to compiler.
+// add -define:IS_WIRE_FRAME=true/false to compiler.
 IS_WIRE_FRAME :: #config(IS_WIRE_FRAME, true)
 
 Vertex_Buffer :: struct {
@@ -73,23 +73,6 @@ init :: proc "c" () {
             attrs = {
                 ATTR_quad_position = { format = .FLOAT3 },
                 ATTR_quad_color    = { format = .FLOAT4 },
-            },
-        },
-
-        depth = {
-            compare       = .LESS_EQUAL,
-            write_enabled = true,
-        },
-
-        colors = {
-            0 = {
-                blend = {
-                    enabled          = true,
-                    src_factor_rgb   = .SRC_ALPHA,
-                    dst_factor_rgb   = .ONE_MINUS_SRC_ALPHA,
-                    src_factor_alpha = .ONE,
-                    dst_factor_alpha = .ONE_MINUS_SRC_ALPHA,
-                },
             },
         },
 
