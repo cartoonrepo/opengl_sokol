@@ -6,24 +6,19 @@
   ```
 
 2. Build the required static link libraries:
-    # navigate to sokol libs
     ```
+    1. navigate to sokol libs
     cd opengl_sokol/sokol-odin/sokol
-    ```
+
+    2. build libraries
     # on Linux:
-    ```
     ./build_clibs_linux.sh
-    ```
     # on Windows with MSVC (from a 'Visual Studio Developer Command Prompt')
-    ```
     build_clibs_windows.cmd
-    ```
     # on macOS:
-    ```
     ./build_clibs_macos.sh
-    ```
-    # back to project root
-    ```
+
+    3. back to project root
     cd ../../
     ```
 
