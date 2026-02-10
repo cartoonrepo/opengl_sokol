@@ -1,4 +1,5 @@
 # Learn SOKOL
+![Yotube Tutorial](screencaps/yt_tutorial.png)
 
 1. Clone the repo:
   ```
@@ -27,5 +28,3 @@
   ```
   odin run src/1_4_hello_triangle -debug -collection:sokol=sokol-odin/sokol
   ```
-
-![Yotube Tutorial](screencaps/yt_tutorial.png)
