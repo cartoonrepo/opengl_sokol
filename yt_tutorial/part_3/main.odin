@@ -2,7 +2,10 @@ package main
 
 import "core:fmt"
 import "core:log"
+import "core:math/linalg"
+
 import "base:runtime"
+import "base:intrinsics"
 
 import stbi "vendor:stb/image"
 
@@ -14,12 +17,16 @@ import slog  "sokol:log"
 default_context: runtime.Context
 
 Vec2 :: [2]f32
+Vec3 :: [3]f32
+Mat4 :: matrix[4, 4]f32
 
 Vertex_Data :: struct {
-    position : Vec2,
+    position : Vec3,
     uv       : Vec2,
     color    : sg.Color,
 }
+
+ROTATION_SPEED :: 90
 
 State :: struct {
     shader        : sg.Shader,
@@ -27,6 +34,7 @@ State :: struct {
     bindings      : sg.Bindings,
     pass_action   : sg.Pass_Action,
     image         : sg.Image,
+    rotation      : f32,
 }
 
 state: ^State
@@ -40,9 +48,9 @@ main :: proc() {
         frame_cb     = frame,
         cleanup_cb   = cleanup,
         event_cb     = event,
-        width        = 800,
-        height       = 800,
-        window_title = "Part_2: Textured Quad",
+        width        = 1280,
+        height       = 720,
+        window_title = "Part_3: Rotating Wall",
         icon         = { sokol_default = true },
         logger       = { func = slog.func },
     })
@@ -66,7 +74,7 @@ init :: proc "c" () {
         shader = state.shader,
         layout = {
             attrs = {
-                ATTR_main_position = { format = .FLOAT2 },
+                ATTR_main_position = { format = .FLOAT3 },
                 ATTR_main_uv       = { format = .FLOAT2 },
                 ATTR_main_color    = { format = .FLOAT4 },
             },
@@ -89,10 +97,10 @@ init :: proc "c" () {
     WHITE :: sg.Color { 1.0, 1.0, 1.0, 1.0 }
 
     vertices := []Vertex_Data {
-        { position = { -0.5,  0.5 }, uv = { 0, 1 }, color = WHITE }, // top left
-        { position = {  0.5,  0.5 }, uv = { 1, 1 }, color = WHITE }, // top right
-        { position = {  0.5, -0.5 }, uv = { 1, 0 }, color = WHITE }, // bottom right
-        { position = { -0.5, -0.5 }, uv = { 0, 0 }, color = WHITE }, // bottom left
+        { position = { -0.5,  0.5, 0.0 }, uv = { 0, 1 }, color = WHITE }, // top left
+        { position = {  0.5,  0.5, 0.0 }, uv = { 1, 1 }, color = WHITE }, // top right
+        { position = {  0.5, -0.5, 0.0 }, uv = { 1, 0 }, color = WHITE }, // bottom right
+        { position = { -0.5, -0.5, 0.0 }, uv = { 0, 0 }, color = WHITE }, // bottom left
     }
 
     state.bindings.vertex_buffers[0] = sg.make_buffer({
@@ -110,7 +118,10 @@ init :: proc "c" () {
     // image
     w, h: i32
     stbi.set_flip_vertically_on_load(true)
-    pixels := stbi.load("assets/awesomeface.png", &w, &h, nil, 4)
+    // pixels := stbi.load("assets/awesomeface.png", &w, &h, nil, 4)
+    pixels := stbi.load("assets/BRICK_1A.PNG", &w, &h, nil, 4)
+    // pixels := stbi.load("assets/FLOOR_3A.PNG", &w, &h, nil, 4)
+
     assert(pixels != nil)
 
     state.image = sg.make_image({
@@ -138,7 +149,7 @@ init :: proc "c" () {
     // pass action
     state.pass_action = {
         colors = {
-            0 = { load_action = .CLEAR, store_action = .DEFAULT, clear_value = { 0.2, 0.4, 0.8, 1.0 } },
+            0 = { load_action = .CLEAR, store_action = .DEFAULT, clear_value = { 0.0, 0.04, 0.08, 1.0 } },
         },
     }
 }
@@ -146,10 +157,22 @@ init :: proc "c" () {
 frame :: proc "c" () {
     context = default_context
 
+    dt := f32(sapp.frame_duration())
+
+    state.rotation += linalg.to_radians(ROTATION_SPEED * dt)
+
+    p := linalg.matrix4_perspective_f32(70, sapp.widthf() / sapp.heightf(), 0.01, 1000)
+    m := linalg.matrix4_translate_f32({ 0.0, 0.0, -2.0 }) * linalg.matrix4_from_yaw_pitch_roll_f32(state.rotation, 0, 0)
+
+    vs_params := Vs_Params {
+        mvp = p * m,
+    }
+
     sg.begin_pass({ action = state.pass_action, swapchain = sglue.swapchain() })
 
     sg.apply_pipeline(state.pipeline)
     sg.apply_bindings(state.bindings)
+    sg.apply_uniforms(UB_Vs_Params, sg_range(&vs_params))
 
     sg.draw(0, 6, 1)
 
@@ -188,7 +211,19 @@ event :: proc "c" (e: ^sapp.Event) {
     }
 }
 
-sg_range :: proc(s: []$T) -> sg.Range {
+sg_range :: proc {
+    sg_range_from_struct,
+    sg_range_from_slice,
+}
+
+sg_range_from_struct :: proc(s: ^$T) -> sg.Range where intrinsics.type_is_struct(T) {
+    return {
+        ptr  = s,
+        size = size_of(T),
+    }
+}
+
+sg_range_from_slice :: proc(s: []$T) -> sg.Range {
     return {
         ptr  = raw_data(s),
         size = len(s) * size_of(s[0]),
