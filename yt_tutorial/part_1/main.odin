@@ -4,10 +4,10 @@ import "core:fmt"
 import "core:log"
 import "base:runtime"
 
-import sapp     "sokol:app"
-import sg       "sokol:gfx"
-import sglue    "sokol:glue"
-import shelpers "sokol:helpers"
+import sapp  "sokol:app"
+import sg    "sokol:gfx"
+import sglue "sokol:glue"
+import slog "sokol:log"
 
 default_context: runtime.Context
 
@@ -21,7 +21,7 @@ Vertex_Data :: struct {
 State :: struct {
     shader        : sg.Shader,
     pipeline      : sg.Pipeline,
-    vertex_buffer : sg.Buffer,
+    bindings      : sg.Bindings,
     pass_action   : sg.Pass_Action,
 }
 
@@ -41,19 +41,16 @@ main :: proc() {
         height       = 720,
         window_title = "Part_1: Triangle",
         icon         = { sokol_default = true },
-
-        allocator    = sapp.Allocator(shelpers.allocator(&default_context)),
-        logger       = sapp.Logger(shelpers.logger(&default_context)),
+        logger       = { func = slog.func },
     })
 }
 
 init :: proc "c" () {
     context = default_context
 
-    log.debug("Hellope Cartoons")
-
     sg.setup({
         environment = sglue.environment(),
+        logger      = { func = slog.func },
     })
 
     state = new(State)
@@ -80,7 +77,7 @@ init :: proc "c" () {
         { position = { -0.5, -0.5 }, color = { 0.0, 0.0, 1.0, 1.0 } },
     }
 
-    state.vertex_buffer = sg.make_buffer({
+    state.bindings.vertex_buffers[0] = sg.make_buffer({
         data = { ptr = raw_data(vertices), size = len(vertices) * size_of(vertices[0]) },
     })
 
@@ -98,9 +95,7 @@ frame :: proc "c" () {
     sg.begin_pass({ action = state.pass_action, swapchain = sglue.swapchain() })
 
     sg.apply_pipeline(state.pipeline)
-    sg.apply_bindings({
-        vertex_buffers = { 0 = state.vertex_buffer },
-    })
+    sg.apply_bindings(state.bindings)
 
     sg.draw(0, 3, 1)
 
@@ -111,6 +106,7 @@ frame :: proc "c" () {
 cleanup :: proc "c" () {
     context = default_context
 
+    sg.destroy_buffer(state.bindings.vertex_buffers[0])
     sg.destroy_pipeline(state.pipeline)
     sg.destroy_shader(state.shader)
 
