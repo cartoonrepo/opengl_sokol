@@ -1,11 +1,11 @@
 # Learn SOKOL
 
-2. Clone the repo:
+1. Clone the repo:
   ```
   git clone --recurse-submodules git@github.com:cartoonrepo/opengl_sokol.git
   ```
 
-2. build the required static link libraries:
+2. Build the required static link libraries:
     ```
     cd opengl_sokol/sokol-odin/sokol
 
