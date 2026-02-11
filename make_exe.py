@@ -16,7 +16,7 @@ IS_WINDOWS = platform.system() == "Windows"
 
 # ----------------------------------------------------------------
 program_name  = "cartoon"
-source        = "src/1_4_2_quad"
+source        = "src/1_3_shaders"
 
 collections   = ["-collection:sokol=sokol-odin/sokol"]
 extra_flags   = ["-strict-style", "-microarch:native"]

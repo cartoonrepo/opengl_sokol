@@ -13,6 +13,7 @@ import sapp  "sokol:app"
 import sg    "sokol:gfx"
 import sglue "sokol:glue"
 import slog  "sokol:log"
+import shelp "sokol:helpers"
 
 default_context: runtime.Context
 
@@ -52,7 +53,7 @@ main :: proc() {
         height       = 720,
         window_title = "Part_3: Rotating Wall",
         icon         = { sokol_default = true },
-        logger       = { func = slog.func },
+        logger       = transmute(sapp.Logger)shelp.logger(&ctx), // app logger
     })
 }
 
@@ -61,7 +62,7 @@ init :: proc "c" () {
 
     sg.setup({
         environment = sglue.environment(),
-        logger      = { func = slog.func },
+        logger      = transmute(sg.Logger)shelp.logger(&ctx), // gfx logger
     })
 
     state = new(State)

@@ -2,13 +2,13 @@
 @header import sg "sokol:gfx"
 
 @vs vs
-in vec4 position;
+in vec3 position;
 in vec4 color;
 
 out vec4 v_color;
 
 void main() {
-    gl_Position = position;
+    gl_Position = vec4(position, 1.0);
     v_color = color;
 }
 @end
@@ -23,4 +23,4 @@ void main() {
 }
 @end
 
-@program quad vs fs
+@program shader vs fs
