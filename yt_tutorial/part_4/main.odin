@@ -17,8 +17,6 @@ import sglue "sokol:glue"
 import slog  "sokol:log"
 import shelp "sokol:helpers"
 
-default_context: runtime.Context
-
 Vec2 :: [2]f32
 Vec3 :: [3]f32
 Vec4 :: [4]f32
@@ -58,9 +56,10 @@ State :: struct {
 
 state: ^State
 
+ctx: runtime.Context
 main :: proc() {
     context.logger = log.create_console_logger()
-    default_context = context
+    ctx = context
 
     sapp.run({
         init_cb      = init,
@@ -76,7 +75,7 @@ main :: proc() {
 }
 
 init :: proc "c" () {
-    context = default_context
+    context = ctx
 
     sapp.lock_mouse(true)
 
@@ -192,7 +191,7 @@ load_image :: proc(file_name: cstring) -> sg.Image {
 }
 
 frame :: proc "c" () {
-    context = default_context
+    context = ctx
 
     // lock mouse after resizing window
     if !sapp.mouse_locked() do sapp.lock_mouse(true)
@@ -243,7 +242,7 @@ frame :: proc "c" () {
 }
 
 cleanup :: proc "c" () {
-    context = default_context
+    context = ctx
 
     sg.destroy_buffer(state.bindings.vertex_buffers[0])
     sg.destroy_buffer(state.bindings.index_buffer)
@@ -267,7 +266,7 @@ mouse_move: Vec2
 key_down: #sparse[sapp.Keycode]bool
 
 event :: proc "c" (e: ^sapp.Event) {
-    context = default_context
+    context = ctx
 
     #partial switch e.type {
     case .KEY_DOWN:

@@ -10,8 +10,6 @@ import sglue "sokol:glue"
 import slog "sokol:log"
 import shelp "sokol:helpers"
 
-default_context: runtime.Context
-
 Vec2 :: [2]f32
 
 Vertex_Data :: struct {
@@ -28,9 +26,10 @@ State :: struct {
 
 state: ^State
 
+ctx: runtime.Context
 main :: proc() {
     context.logger = log.create_console_logger()
-    default_context = context
+    ctx = context
 
     sapp.run({
         init_cb      = init,
@@ -47,7 +46,7 @@ main :: proc() {
 }
 
 init :: proc "c" () {
-    context = default_context
+    context = ctx
 
     sg.setup({
         environment = sglue.environment(),
@@ -91,8 +90,7 @@ init :: proc "c" () {
 }
 
 frame :: proc "c" () {
-    context = default_context
-
+    context = ctx
     sg.begin_pass({ action = state.pass_action, swapchain = sglue.swapchain() })
 
     sg.apply_pipeline(state.pipeline)
@@ -105,8 +103,7 @@ frame :: proc "c" () {
 }
 
 cleanup :: proc "c" () {
-    context = default_context
-
+    context = ctx
     sg.destroy_buffer(state.bindings.vertex_buffers[0])
     sg.destroy_pipeline(state.pipeline)
     sg.destroy_shader(state.shader)
@@ -116,8 +113,6 @@ cleanup :: proc "c" () {
 }
 
 event :: proc "c" (e: ^sapp.Event) {
-    context = default_context
-
     #partial switch e.type {
     case .KEY_DOWN:
         #partial switch e.key_code {
