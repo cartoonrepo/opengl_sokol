@@ -1,6 +1,5 @@
 package main
 
-import "core:fmt"
 import "core:log"
 import "core:math/linalg"
 
@@ -12,7 +11,6 @@ import stbi "vendor:stb/image"
 import sapp  "sokol:app"
 import sg    "sokol:gfx"
 import sglue "sokol:glue"
-import slog  "sokol:log"
 import shelp "sokol:helpers"
 
 Vec2 :: [2]f32
@@ -52,7 +50,7 @@ main :: proc() {
         height       = 720,
         window_title = "Part_3: Rotating Wall",
         icon         = { sokol_default = true },
-        logger       = transmute(sapp.Logger)shelp.logger(&ctx), // app logger
+        logger       = sapp.Logger(shelp.logger(&ctx)), // app logger
     })
 }
 
@@ -60,8 +58,8 @@ init :: proc "c" () {
     context = ctx
 
     sg.setup({
+        logger      = sg.Logger(shelp.logger(&ctx)),
         environment = sglue.environment(),
-        logger      = transmute(sg.Logger)shelp.logger(&ctx), // gfx logger
     })
 
     state = new(State)
@@ -117,7 +115,7 @@ init :: proc "c" () {
 
     // image
     w, h: i32
-    stbi.set_flip_vertically_on_load(true)
+    stbi.set_flip_vertically_on_load(auto_cast true)
     // pixels := stbi.load("assets/awesomeface.png", &w, &h, nil, 4)
     pixels := stbi.load("assets/BRICK_1A.PNG", &w, &h, nil, 4)
     // pixels := stbi.load("assets/FLOOR_3A.PNG", &w, &h, nil, 4)

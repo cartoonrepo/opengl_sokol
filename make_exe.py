@@ -8,7 +8,6 @@ import platform
 import subprocess
 import shutil
 import sys
-
 from pathlib import Path
 
 IS_LINUX   = platform.system() == "Linux"
@@ -41,6 +40,7 @@ parser.add_argument("-debug",   action="store_true", help="debug build")
 parser.add_argument("-clean",   action="store_true", help="clean build folder")
 parser.add_argument("-run",     action="store_true", help="run after compiling")
 parser.add_argument("-hold",    action="store_true", help="hold on error when using -run")
+parser.add_argument("-check",   action="store_true", help="check all programs")
 
 args = parser.parse_args()
 
@@ -63,14 +63,18 @@ def main():
         clean(build_dir)
 
     build_dir.mkdir(parents=True, exist_ok=True)
-    build(build_dir, flags)
+
+    if args.check:
+        check_programs(build_dir, flags)
+        sys.exit(0)
+
+    binary = build_dir / program_name
+    build(source, binary, flags)
 
 # ----------------------------------------------------------------
-def build(binary_path: Path, flags):
-    binary = binary_path / program_name
-
+def build(source, binary: Path, flags):
     if IS_WINDOWS:
-            binary = binary.with_suffix(".exe")
+        binary = binary.with_suffix(".exe")
 
     # options = "run" if args.run else "build"
     command = ["odin", "build", source, f"-out:{str(binary)}"] + flags
@@ -117,5 +121,17 @@ def clean(path: Path):
 
 
 # ----------------------------------------------------------------
+# stupid way to test things
+def check_programs(build_dir: Path, flags):
+    for p in Path("yt_tutorial").iterdir():
+        if not p.is_dir():
+            continue
+
+        print("----------------------------------------------------------------")
+        print(f"Building: {p.name}")
+        binary = build_dir / program_name
+        build(str(p), binary, flags)
+        print()
+
 if __name__ == "__main__":
     main()

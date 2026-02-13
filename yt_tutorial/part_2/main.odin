@@ -1,6 +1,5 @@
 package main
 
-import "core:fmt"
 import "core:log"
 import "base:runtime"
 
@@ -9,7 +8,6 @@ import stbi "vendor:stb/image"
 import sapp  "sokol:app"
 import sg    "sokol:gfx"
 import sglue "sokol:glue"
-import slog  "sokol:log"
 import shelp "sokol:helpers"
 
 
@@ -45,7 +43,7 @@ main :: proc() {
         height       = 800,
         window_title = "Part_2: Textured Quad",
         icon         = { sokol_default = true },
-        logger       = transmute(sapp.Logger)shelp.logger(&ctx), // app logger
+        logger       = sapp.Logger(shelp.logger(&ctx)), // app logger
     })
 }
 
@@ -54,7 +52,7 @@ init :: proc "c" () {
 
     sg.setup({
         environment = sglue.environment(),
-        logger      = transmute(sg.Logger)shelp.logger(&ctx), // gfx logger
+        logger      = sg.Logger(shelp.logger(&ctx)),
     })
 
     state = new(State)
@@ -110,7 +108,7 @@ init :: proc "c" () {
 
     // image
     w, h: i32
-    stbi.set_flip_vertically_on_load(true)
+    stbi.set_flip_vertically_on_load(auto_cast true)
     pixels := stbi.load("assets/awesomeface.png", &w, &h, nil, 4)
     assert(pixels != nil)
 

@@ -1,7 +1,6 @@
 package main
 
 import "base:runtime"
-import "core:fmt"
 
 import slog  "sokol:log"
 import sg    "sokol:gfx"

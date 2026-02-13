@@ -1,6 +1,5 @@
 package main
 
-import "core:fmt"
 import "core:log"
 
 import "core:math"
@@ -14,7 +13,6 @@ import stbi "vendor:stb/image"
 import sapp  "sokol:app"
 import sg    "sokol:gfx"
 import sglue "sokol:glue"
-import slog  "sokol:log"
 import shelp "sokol:helpers"
 
 Vec2 :: [2]f32
@@ -70,7 +68,7 @@ main :: proc() {
         height       = 720,
         window_title = "Part_4: Camera Control",
         icon         = { sokol_default = true },
-        logger       = transmute(sapp.Logger)shelp.logger(&ctx), // app logger
+        logger       = sapp.Logger(shelp.logger(&ctx)), // app logger
     })
 }
 
@@ -81,7 +79,7 @@ init :: proc "c" () {
 
     sg.setup({
         environment = sglue.environment(),
-        logger      = transmute(sg.Logger)shelp.logger(&ctx), // gfx logger
+        logger      = sg.Logger(shelp.logger(&ctx)),
     })
 
     state = new(State)
@@ -168,7 +166,7 @@ init :: proc "c" () {
 
 load_image :: proc(file_name: cstring) -> sg.Image {
     w, h: i32
-    stbi.set_flip_vertically_on_load(true)
+    stbi.set_flip_vertically_on_load(auto_cast true)
 
     pixels := stbi.load(file_name, &w, &h, nil, 4)
 

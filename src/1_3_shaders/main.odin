@@ -6,7 +6,6 @@ import "base:runtime"
 
 import sapp  "sokol:app"
 import sg    "sokol:gfx"
-import slog  "sokol:log"
 import sglue "sokol:glue"
 import shelp "sokol:helpers"
 
@@ -45,7 +44,7 @@ main :: proc() {
         height       = 720,
         window_title = "Shaders",
         icon         = { sokol_default = true },
-        logger       = transmute(sapp.Logger)shelp.logger(&ctx), // app logger
+        logger       = sapp.Logger(shelp.logger(&ctx)), // app logger
     })
 }
 
@@ -54,7 +53,7 @@ init :: proc "c" () {
 
     sg.setup({
         environment = sglue.environment(),
-        logger      = transmute(sg.Logger)shelp.logger(&ctx), // gfx logger
+        logger      = sg.Logger(shelp.logger(&ctx)),
     })
 
     switch sg.query_backend() {

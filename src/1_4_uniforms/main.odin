@@ -8,7 +8,6 @@ import "core:time"
 
 import sapp  "sokol:app"
 import sg    "sokol:gfx"
-import slog  "sokol:log"
 import sglue "sokol:glue"
 import shelp "sokol:helpers"
 
@@ -45,7 +44,7 @@ main :: proc() {
     height       = 720,
     window_title = "uniforms",
     icon         = { sokol_default = true },
-    logger       = transmute(sapp.Logger)shelp.logger(&ctx),
+    logger       = sapp.Logger(shelp.logger(&ctx)), // app logger
     })
 }
 
@@ -54,7 +53,7 @@ init :: proc "c" () {
 
     // setup
     sg.setup({
-        logger      = transmute(sg.Logger)shelp.logger(&ctx),
+        logger      = sg.Logger(shelp.logger(&ctx)),
         environment = sglue.environment(),
     })
 

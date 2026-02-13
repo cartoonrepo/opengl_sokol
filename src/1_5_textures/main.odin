@@ -2,14 +2,13 @@ package main
 
 import "base:runtime"
 import "base:intrinsics"
-import "core:math"
+// import "core:math"
 import "core:log"
 
 import stbi "vendor:stb/image"
 
 import sapp  "sokol:app"
 import sg    "sokol:gfx"
-import slog  "sokol:log"
 import sglue "sokol:glue"
 import shelp "sokol:helpers"
 
@@ -44,7 +43,7 @@ main :: proc() {
     height       = 720,
     window_title = "textures",
     icon         = { sokol_default = true },
-    logger       = transmute(sapp.Logger)shelp.logger(&ctx),
+    logger       = sapp.Logger(shelp.logger(&ctx)), // app logger
     })
 }
 
@@ -53,7 +52,7 @@ init :: proc "c" () {
 
     // setup
     sg.setup({
-        logger      = transmute(sg.Logger)shelp.logger(&ctx),
+        logger      = sg.Logger(shelp.logger(&ctx)),
         environment = sglue.environment(),
     })
 
@@ -92,7 +91,7 @@ init :: proc "c" () {
     // image
     {
         w, h: i32
-        stbi.set_flip_vertically_on_load(true)
+        stbi.set_flip_vertically_on_load(auto_cast true)
         pixels := stbi.load("assets/awesomeface.png", &w, &h, nil, 4)
         defer stbi.image_free(pixels)
 
@@ -157,7 +156,6 @@ frame :: proc "c" () {
     sg.begin_pass({ action = state.pass_action, swapchain = sglue.swapchain() })
     sg.apply_pipeline(state.pipe)
     sg.apply_bindings(state.bind)
-
     sg.draw(0, 6, 1)
     sg.end_pass()
     sg.commit()
@@ -167,14 +165,10 @@ cleanup :: proc "c" () {
     context = ctx
 
     sg.destroy_shader(state.shader)
-
     sg.destroy_buffer(state.bind.vertex_buffers[0])
     sg.destroy_buffer(state.bind.index_buffer)
-
     sg.destroy_sampler(state.bind.samplers[SMP_f_sampler])
-
     sg.destroy_pipeline(state.pipe)
-
     sg.destroy_image(sg.Image(state.bind.views[VIEW_f_texture]))
     sg.destroy_view(state.bind.views[VIEW_f_texture])
 

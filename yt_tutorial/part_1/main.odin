@@ -1,13 +1,11 @@
 package main
 
-import "core:fmt"
 import "core:log"
 import "base:runtime"
 
 import sapp  "sokol:app"
 import sg    "sokol:gfx"
 import sglue "sokol:glue"
-import slog "sokol:log"
 import shelp "sokol:helpers"
 
 Vec2 :: [2]f32
@@ -41,7 +39,7 @@ main :: proc() {
         height       = 720,
         window_title = "Part_1: Triangle",
         icon         = { sokol_default = true },
-        logger       = transmute(sapp.Logger)shelp.logger(&ctx), // app logger
+        logger       = sapp.Logger(shelp.logger(&ctx)), // app logger
     })
 }
 
@@ -49,8 +47,8 @@ init :: proc "c" () {
     context = ctx
 
     sg.setup({
+        logger      = sg.Logger(shelp.logger(&ctx)),
         environment = sglue.environment(),
-        logger      = transmute(sg.Logger)shelp.logger(&ctx), // gfx logger
     })
 
     state = new(State)
