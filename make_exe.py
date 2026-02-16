@@ -15,7 +15,7 @@ IS_WINDOWS = platform.system() == "Windows"
 
 # ----------------------------------------------------------------
 program_name  = "cartoon"
-source        = "src/1_5_textures"
+source        = "src/1_6_multiple_textures"
 
 collections   = ["-collection:sokol=sokol-odin/sokol"]
 extra_flags   = ["-strict-style", "-microarch:native"]
@@ -25,8 +25,8 @@ release_flags = ["-o:speed", "-vet", "-no-bounds-check"]
 if IS_LINUX:
     extra_flags.append("-linker:mold")
 
-# if IS_WINDOWS:
-    # extra_flags.append("-subsystem:windows")
+if IS_WINDOWS:
+    extra_flags.append("-subsystem:windows")
 
 # ----------------------------------------------------------------
 parser = argparse.ArgumentParser(
@@ -123,7 +123,7 @@ def clean(path: Path):
 # ----------------------------------------------------------------
 # stupid way to test things
 def check_programs(build_dir: Path, flags):
-    for p in Path("yt_tutorial").iterdir():
+    for p in Path("src").iterdir():
         if not p.is_dir():
             continue
 
